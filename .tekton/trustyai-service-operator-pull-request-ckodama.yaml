@@ -14,7 +14,7 @@ metadata:
     appstudio.openshift.io/application: trustyai-service-operator
     appstudio.openshift.io/component: trustyai-service-operator
     pipelines.appstudio.openshift.io/type: build
-  name: trustyai-service-operator-on-pull-request
+  name: trustyai-service-operator-on-pull-request-ckodama
   namespace: rh-ee-ckodama-tenant
 spec:
   params:
