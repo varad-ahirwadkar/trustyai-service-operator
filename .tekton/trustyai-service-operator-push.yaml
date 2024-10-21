@@ -25,6 +25,15 @@ spec:
     value: quay.io/redhat-user-workloads/mrafeeq-tenant/trustyai-service-operator:{{revision}}
   - name: dockerfile
     value: Dockerfile.driver
+  taskRunSpecs:
+    - pipelineTaskName: ecosystem-cert-preflight-checks
+      computeResources:
+        requests:
+          cpu: '2'
+          memory: 10Gi
+        limits:
+          cpu: '4'
+          memory: 20Gi
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
