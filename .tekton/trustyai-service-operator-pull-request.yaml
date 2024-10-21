@@ -11,11 +11,11 @@ metadata:
       == "dev/lm-eval"
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: trustyai-service-operator
+    appstudio.openshift.io/application: lmeval
     appstudio.openshift.io/component: trustyai-service-operator
     pipelines.appstudio.openshift.io/type: build
   name: trustyai-service-operator-on-pull-request
-  namespace: rh-ee-ckodama-tenant
+  namespace: mrafeeq-tenant
 spec:
   params:
   - name: git-url
@@ -23,11 +23,11 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/redhat-user-workloads/rh-ee-ckodama-tenant/trustyai-service-operator:on-pr-{{revision}}
+    value: quay.io/redhat-user-workloads/mrafeeq-tenant/trustyai-service-operator:on-pr-{{revision}}
   - name: image-expires-after
     value: 5d
   - name: dockerfile
-    value: Dockerfile.lmes-job
+    value: Dockerfile.driver
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
