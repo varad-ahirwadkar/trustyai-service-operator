@@ -13,7 +13,7 @@ metadata:
       && target_branch == "rhoai-2.16"
       && ( !".tekton/**".pathChanged() || ".tekton/ta-lmes-driver-216-push.yaml".pathChanged() )
       && !"config/overlays/rhoai/params.env".pathChanged()
-  creationTimestamp: null
+  creationTimestamp:
   labels:
     appstudio.openshift.io/application: ta-lmes-driver
     appstudio.openshift.io/component: ta-lmes-driver-216
@@ -62,13 +62,11 @@ spec:
       name: output-image
       type: string
     - default: .
-      description: Path to the source code of an application's component from where
-        to build image.
+      description: Path to the source code of an application's component from where to build image.
       name: path-context
       type: string
     - default: Dockerfile
-      description: Path to the Dockerfile inside the context specified by parameter
-        path-context
+      description: Path to the Dockerfile inside the context specified by parameter path-context
       name: dockerfile
       type: string
     - default: "false"
@@ -88,10 +86,9 @@ spec:
       name: prefetch-input
       type: string
     - default: ""
-      description: Image tag expiration time, time values could be something like
-        1h, 2d, 3w for hours, days, and weeks, respectively.
+      description: Image tag expiration time, time values could be something like 1h, 2d, 3w for hours, days, and weeks, respectively.
       name: image-expires-after
-    - default: "false"
+    - default: "true"
       description: Build a source image.
       name: build-source-image
       type: string
@@ -409,7 +406,7 @@ spec:
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: ADDITIONAL_TAGS
         value:
-          - '{{target_branch}}-{{revision}}'
+        - '{{target_branch}}-{{revision}}'
       runAfter:
       - build-image-index
       taskRef:
