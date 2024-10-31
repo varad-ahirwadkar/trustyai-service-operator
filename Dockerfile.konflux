@@ -46,4 +46,5 @@ LABEL com.redhat.component="odh-trustyai-service-operator-container" \
       io.openshift.expose-services="" \
       io.k8s.display-name="odh-trustyai-service-operator" \
       io.k8s.description="odh-trustyai-service-operator" \
+      io.openshift.tags="" \
       com.redhat.license_terms="https://www.redhat.com/licenses/Red_Hat_Standard_EULA_20191108.pdf"
