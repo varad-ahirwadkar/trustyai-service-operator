@@ -171,78 +171,12 @@ func (q *syncedMap4Reconciler) remove(key string) {
 func (r *LMEvalJobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := log.FromContext(ctx)
 
-	job := &lmesv1alpha1.LMEvalJob{}
-	if err := r.Get(ctx, req.NamespacedName, job); err != nil {
-		log.Info("unable to fetch LMEvalJob. could be from a deletion request")
-		return ctrl.Result{}, client.IgnoreNotFound(err)
-	}
+	r.Recorder.Eventf(&lmesv1alpha1.LMEvalJob{}, corev1.EventTypeWarning, "NotSupported",
+		"LMEvalJob CRD is not currently supported")
 
-	if !job.ObjectMeta.DeletionTimestamp.IsZero() {
-		// Handle deletion here
-		return r.handleDeletion(ctx, job, log)
-	}
+	log.Info("LMEvalJob CRD is not supported. Ignoring reconciliation request.")
 
-	// Treat this as NewJobState
-	if job.Status.LastScheduleTime == nil && job.Status.CompleteTime == nil {
-		job.Status.State = lmesv1alpha1.NewJobState
-	}
-
-	if JobMgrEnabled && job.Status.State != lmesv1alpha1.CompleteJobState {
-		//the job requires kueue.x-k8s.io/queue-name label if Job Manager is enabled
-		if _, ok := job.ObjectMeta.GetLabels()["kueue.x-k8s.io/queue-name"]; !ok {
-			job.Status.State = lmesv1alpha1.CompleteJobState
-			job.Status.Reason = lmesv1alpha1.FailedReason
-			job.Status.Message = "job requires kueue.x-k8s.io/queue-name label"
-			log.Error(fmt.Errorf("job %s requires kueue.x-k8s.io/queue-name label", job.Name), "LMevalJob requires kueue.x-k8s.io/queue-name label when Job Manager is enabled")
-			return r.handleComplete(ctx, log, job)
-		} else if job.Spec.Suspend {
-			return r.handleSuspend(ctx, log, job)
-		}
-	}
-
-	// If outputs have been explicitly set
-	if job.Spec.HasCustomOutput() {
-		// If managed PVC is set
-		if job.Spec.Outputs.HasManagedPVC() {
-			if job.Spec.Outputs.HasExistingPVC() {
-				log.Info("LMEvalJob has both managed and existing PVCs defined. Existing PVC configuration will be ignored.")
-			}
-			err := r.handleManagedPVC(ctx, log, job)
-			if err != nil {
-				return ctrl.Result{}, err
-			}
-		} else if job.Spec.Outputs.HasExistingPVC() {
-			err := r.handleExistingPVC(ctx, log, job)
-			if err != nil {
-				return ctrl.Result{}, err
-			}
-		}
-	}
-	log.Info("Continuing after PVC")
-
-	// Handle the job based on its state
-	switch job.Status.State {
-	case lmesv1alpha1.NewJobState:
-		// Handle newly created job
-		return r.handleNewCR(ctx, log, job)
-	case lmesv1alpha1.ScheduledJobState:
-		// the job's pod has been created and the driver hasn't updated the state yet
-		// let's check the pod status and detect pod failure if there is
-		// TODO: need a timeout/retry mechanism here to transit to other states
-		return r.checkScheduledPod(ctx, log, job)
-	case lmesv1alpha1.RunningJobState:
-		// TODO: need a timeout/retry mechanism here to transit to other states
-		return r.checkScheduledPod(ctx, log, job)
-	case lmesv1alpha1.CompleteJobState:
-		return r.handleComplete(ctx, log, job)
-	case lmesv1alpha1.CancelledJobState:
-		return r.handleCancel(ctx, log, job)
-	case lmesv1alpha1.SuspendedJobState:
-		if !job.Spec.Suspend {
-			return r.handleResume(ctx, log, job)
-		}
-	}
-
+	// Do nothing and return
 	return ctrl.Result{}, nil
 }
 
