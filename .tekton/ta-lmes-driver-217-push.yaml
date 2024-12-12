@@ -6,8 +6,11 @@ metadata:
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
-      == "rhoai-2.17"
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      event == "push" 
+      && target_branch == "rhoai-2.17"
+      && ( !".tekton/**".pathChanged() || ".tekton/ta-lmes-driver-217-push.yaml".pathChanged() )
+      && !"config/overlays/rhoai/params.env".pathChanged()
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: ta-lmes-driver
