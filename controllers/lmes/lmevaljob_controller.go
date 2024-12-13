@@ -68,6 +68,8 @@ var (
 		"DefaultBatchSize":    DefaultBatchSizeKey,
 		"MaxBatchSize":        MaxBatchSizeKey,
 		"DetectDevice":        DetectDeviceKey,
+		"AllowOnline":         AllowOnline,
+		"AllowCodeExecution":  AllowCodeExecution,
 	}
 
 	labelFilterPrefixes       = []string{}
@@ -666,7 +668,7 @@ func (r *LMEvalJobReconciler) validateCustomCard(job *lmesv1alpha1.LMEvalJob, lo
 
 func CreatePod(svcOpts *serviceOptions, job *lmesv1alpha1.LMEvalJob, log logr.Logger) *corev1.Pod {
 
-	var envVars = job.Spec.Pod.GetContainer().GetEnv()
+	var envVars = removeProtectedEnvVars(job.Spec.Pod.GetContainer().GetEnv())
 
 	var volumeMounts = []corev1.VolumeMount{
 		{
@@ -713,20 +715,59 @@ func CreatePod(svcOpts *serviceOptions, job *lmesv1alpha1.LMEvalJob, log logr.Lo
 		volumes = append(volumes, outputPVC)
 	}
 
-	// If the job is supposed to run offline, set the appropriate HuggingFace offline flags
-	if job.Spec.IsOffline() {
+	remoteCodeEnvVars := []corev1.EnvVar{
+		{
+			Name:  "TRUST_REMOTE_CODE",
+			Value: "0",
+		},
+		{
+			Name:  "HF_DATASETS_TRUST_REMOTE_CODE",
+			Value: "0",
+		},
+	}
 
-		offlineHuggingFaceEnvVars := []corev1.EnvVar{
-			{
-				Name:  "HF_DATASETS_OFFLINE",
-				Value: "1",
-			},
-			{
-				Name:  "HF_HUB_OFFLINE",
-				Value: "1",
-			},
+	if job.Spec.AllowCodeExecution != nil && *job.Spec.AllowCodeExecution {
+		// Disable remote code execution by default
+
+		if !svcOpts.AllowCodeExecution {
+			log.Error(fmt.Errorf("code execution not allowed by the operator"), "change this setting and redeploy the operator")
+			envVars = append(envVars, remoteCodeEnvVars...)
 		}
+	} else {
+		envVars = append(envVars, remoteCodeEnvVars...)
+	}
+
+	offlineHuggingFaceEnvVars := []corev1.EnvVar{
+		{
+			Name:  "HF_DATASETS_OFFLINE",
+			Value: "1",
+		},
+		{
+			Name:  "HF_HUB_OFFLINE",
+			Value: "1",
+		},
+		{
+			Name:  "TRANSFORMERS_OFFLINE",
+			Value: "1",
+		},
+		{
+			Name:  "HF_EVALUATE_OFFLINE",
+			Value: "1",
+		},
+	}
+
+	// Enforce offline mode by default
+	if job.Spec.AllowOnline != nil && *job.Spec.AllowOnline {
+
+		if !svcOpts.AllowOnline {
+			log.Error(fmt.Errorf("online mode not allowed by the operator"), "change this setting and redeploy the operator")
+			envVars = append(envVars, offlineHuggingFaceEnvVars...)
+		}
+	} else {
 		envVars = append(envVars, offlineHuggingFaceEnvVars...)
+	}
+
+	if job.Spec.IsOffline() {
 
 		// If the job is offline, a storage must be set. PVC is the only supported storage backend at the moment.
 		offlinePVCMount := corev1.VolumeMount{
@@ -1043,4 +1084,26 @@ func getContainerByName(status *corev1.PodStatus, name string) int {
 	return slices.IndexFunc(status.ContainerStatuses, func(s corev1.ContainerStatus) bool {
 		return s.Name == name
 	})
+}
+
+var ProtectedEnvVarNames = []string{"TRUST_REMOTE_CODE", "HF_DATASETS_TRUST_REMOTE_CODE", "HF_DATASETS_OFFLINE", "HF_HUB_OFFLINE", "TRANSFORMERS_OFFLINE", "HF_EVALUATE_OFFLINE"}
+
+// removeProtectedEnvVars removes protected EnvVars from a list of EnvVars
+func removeProtectedEnvVars(envVars []corev1.EnvVar) []corev1.EnvVar {
+	var allowedEnvVars []corev1.EnvVar
+
+	for _, env := range envVars {
+		exclude := false
+		for _, name := range ProtectedEnvVarNames {
+			if env.Name == name {
+				exclude = true
+				break
+			}
+		}
+		if !exclude {
+			allowedEnvVars = append(allowedEnvVars, env)
+		}
+	}
+
+	return allowedEnvVars
 }
