@@ -17,6 +17,7 @@ limitations under the License.
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"slices"
 	"strings"
@@ -45,23 +46,29 @@ func registerService(name string, setupf ControllerSetupFunc) {
 }
 
 func SetupControllers(enabledServices []string, mgr manager.Manager, ns, configmap string, recorder record.EventRecorder) error {
-	if len(enabledServices) == 0 || enabledServices[0] != "TAS" {
-		return fmt.Errorf("only TAS is supported")
+	var errs []error
+	for _, service := range enabledServices {
+		errs = append(errs, TasServices[service](mgr, ns, configmap, recorder))
 	}
-	if setupFunc, ok := TasServices["TAS"]; ok {
-		return setupFunc(mgr, ns, configmap, recorder)
-	}
-	return fmt.Errorf("TAS service is not registered")
+	return errors.Join(errs...)
 }
 
 func (es *EnabledServices) Set(services string) error {
-	if services != "TAS" {
-		return fmt.Errorf("only TAS is supported, but %s was provided", services)
+	for _, service := range strings.Split(services, ",") {
+		if slices.Contains(*es, service) {
+			return fmt.Errorf("specify the same service twice: %s", service)
+		}
+		if _, ok := TasServices[service]; ok {
+			*es = append(*es, service)
+		} else {
+			return fmt.Errorf(
+				"service %s is not supported. available services: %s",
+				service,
+				strings.Join(AllTasServices, ","),
+			)
+		}
 	}
-	if slices.Contains(*es, services) {
-		return fmt.Errorf("TAS is already enabled")
-	}
-	*es = append(*es, services)
+
 	return nil
 }
 
