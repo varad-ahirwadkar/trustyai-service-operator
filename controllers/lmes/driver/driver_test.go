@@ -18,9 +18,8 @@ package driver
 
 import (
 	"context"
-	"crypto/rand"
 	"flag"
-	"fmt"
+	"math/rand"
 	"os"
 	"testing"
 	"time"
@@ -47,11 +46,10 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func genRandomSocketPath() string {
-	b := make([]byte, 10)
-	rand.Read(b)
-	p := fmt.Sprintf("/tmp/ta-lmes-%x.sock", b)
-	return p
+// to support concurrent testing if needed, each test needs a
+// dedicated port
+func genRandomPort() int {
+	return rand.Intn(1000) + 18080
 }
 
 func runDriverAndWait4Complete(t *testing.T, driver Driver, returnError bool) (progressMsgs []string, results string) {
@@ -84,7 +82,7 @@ func Test_Driver(t *testing.T) {
 		OutputPath: ".",
 		Logger:     driverLog,
 		Args:       []string{"sh", "-ec", "echo tttttttttttttttttttt"},
-		SocketPath: genRandomSocketPath(),
+		CommPort:   genRandomPort(),
 	})
 	assert.Nil(t, err)
 
@@ -101,7 +99,7 @@ func Test_Wait4Shutdown(t *testing.T) {
 		OutputPath: ".",
 		Logger:     driverLog,
 		Args:       []string{"sh", "-ec", "echo test"},
-		SocketPath: genRandomSocketPath(),
+		CommPort:   genRandomPort(),
 	})
 	assert.Nil(t, err)
 
@@ -116,7 +114,7 @@ func Test_Wait4Shutdown(t *testing.T) {
 	assert.Nil(t, driver.Shutdown())
 
 	_, err = driver.GetStatus()
-	assert.ErrorContains(t, err, "no such file or directory")
+	assert.ErrorContains(t, err, "connection refused")
 
 	assert.Nil(t, os.Remove("./stderr.log"))
 	assert.Nil(t, os.Remove("./stdout.log"))
@@ -128,7 +126,7 @@ func Test_ProgressUpdate(t *testing.T) {
 		OutputPath: ".",
 		Logger:     driverLog,
 		Args:       []string{"sh", "-ec", "sleep 2; echo 'testing progress: 100%|' >&2; sleep 4"},
-		SocketPath: genRandomSocketPath(),
+		CommPort:   genRandomPort(),
 	})
 	assert.Nil(t, err)
 
@@ -152,7 +150,7 @@ func Test_DetectDeviceError(t *testing.T) {
 		DetectDevice: true,
 		Logger:       driverLog,
 		Args:         []string{"sh", "-ec", "python -m lm_eval --output_path ./output --model test --model_args arg1=value1 --tasks task1,task2"},
-		SocketPath:   genRandomSocketPath(),
+		CommPort:     genRandomPort(),
 	})
 	assert.Nil(t, err)
 
@@ -166,6 +164,26 @@ func Test_DetectDeviceError(t *testing.T) {
 	// the following files don't exist for this case
 	assert.NotNil(t, os.Remove("./stderr.log"))
 	assert.NotNil(t, os.Remove("./stdout.log"))
+}
+
+func Test_DownloadAssetsS3Error(t *testing.T) {
+	driver, err := NewDriver(&DriverOption{
+		Context:          context.Background(),
+		OutputPath:       ".",
+		DetectDevice:     false,
+		Logger:           driverLog,
+		Args:             []string{"sh", "-ec", "python -m lm_eval --output_path ./output --model test --model_args arg1=value1 --tasks task1,task2"},
+		CommPort:         genRandomPort(),
+		DownloadAssetsS3: true,
+	})
+	assert.Nil(t, err)
+
+	msgs, _ := runDriverAndWait4Complete(t, driver, true)
+	assert.Equal(t, []string{
+		"failed to download assets from S3: exit status 2",
+	}, msgs)
+
+	assert.Nil(t, driver.Shutdown())
 }
 
 func Test_PatchDevice(t *testing.T) {
@@ -211,8 +229,8 @@ func Test_TaskRecipes(t *testing.T) {
 			"card=unitxt.card1,template=unitxt.template,metrics=[unitxt.metric1,unitxt.metric2],format=unitxt.format,num_demos=5,demos_pool_size=10",
 			"card=unitxt.card2,template=unitxt.template2,metrics=[unitxt.metric3,unitxt.metric4],format=unitxt.format,num_demos=5,demos_pool_size=10",
 		},
-		Args:       []string{"sh", "-ec", "sleep 2; echo 'testing progress: 100%|' >&2; sleep 4"},
-		SocketPath: genRandomSocketPath(),
+		Args:     []string{"sh", "-ec", "sleep 2; echo 'testing progress: 100%|' >&2; sleep 4"},
+		CommPort: genRandomPort(),
 	})
 	assert.Nil(t, err)
 
@@ -257,8 +275,8 @@ func Test_CustomCards(t *testing.T) {
 		CustomCards: []string{
 			`{ "__type__": "task_card", "loader": { "__type__": "load_hf", "path": "wmt16", "name": "de-en" }, "preprocess_steps": [ { "__type__": "copy", "field": "translation/en", "to_field": "text" }, { "__type__": "copy", "field": "translation/de", "to_field": "translation" }, { "__type__": "set", "fields": { "source_language": "english", "target_language": "deutch" } } ], "task": "tasks.translation.directed", "templates": "templates.translation.directed.all" }`,
 		},
-		Args:       []string{"sh", "-ec", "sleep 1; echo 'testing progress: 100%|' >&2; sleep 3"},
-		SocketPath: genRandomSocketPath(),
+		Args:     []string{"sh", "-ec", "sleep 1; echo 'testing progress: 100%|' >&2; sleep 3"},
+		CommPort: genRandomPort(),
 	})
 	assert.Nil(t, err)
 
@@ -299,7 +317,7 @@ func Test_ProgramError(t *testing.T) {
 		OutputPath: ".",
 		Logger:     driverLog,
 		Args:       []string{"sh", "-ec", "sleep 1; exit 1"},
-		SocketPath: genRandomSocketPath(),
+		CommPort:   genRandomPort(),
 	})
 	assert.Nil(t, err)
 
