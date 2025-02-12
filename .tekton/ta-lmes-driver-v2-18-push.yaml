@@ -250,7 +250,7 @@ spec:
         - name: name
           value: prefetch-dependencies-oci-ta
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-prefetch-dependencies-oci-ta:0.1@sha256:cc59586f79aa559025b1a2e88cd3de94d502ac35763b0a4686c1e3dcc5955ee7
+          value: quay.io/konflux-ci/tekton-catalog/task-prefetch-dependencies-oci-ta:0.1@sha256:43a9f8dfd661b94c5cae3681deb4b0df7d5dc1bbde2555672d85b383d29fe34e
         - name: kind
           value: task
         resolver: bundles
@@ -291,7 +291,7 @@ spec:
         - name: name
           value: buildah-oci-ta
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-buildah-oci-ta:0.3@sha256:662c29528efc91f2a55a2138acbabe2f8dff15af12823728f10be024ab6c2bbd
+          value: quay.io/konflux-ci/tekton-catalog/task-buildah-oci-ta:0.3@sha256:bf08ccf31a8c0bfab9356967887d1e97d209d3d255860e9e1a0365f7a408ac33
         - name: kind
           value: task
         resolver: bundles
@@ -503,7 +503,7 @@ spec:
         - name: name
           value: sast-coverity-check-oci-ta
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-sast-coverity-check-oci-ta:0.2@sha256:e765486b666ddd2fda3faa9e1ab92e0a1178492a4fdfed162cf2baf845311595
+          value: quay.io/konflux-ci/tekton-catalog/task-sast-coverity-check-oci-ta:0.2@sha256:e92c350e3d115783b65b6bb06e548524d918c740c1929465f347d413d91d72ff
         - name: kind
           value: task
         resolver: bundles
