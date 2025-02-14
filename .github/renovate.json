@@ -45,7 +45,7 @@
           "^quay.io/konflux-ci/tekton-catalog/"
         ],
         "matchUpdateTypes": ["digest"],
-        "enabled": false,
+        "enabled": true,
         "groupName": "Konflux references",
         "branchPrefix": "konflux/references/",
         "group": {
