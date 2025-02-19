@@ -71,10 +71,6 @@ spec:
         operator: in
         values:
         - "Failed"  
-      - input: $(tasks.prefetch-dependencies.status)
-        operator: notin
-        values:
-        - "None"  
     params:
     - description: Source Repository URL
       name: git-url
