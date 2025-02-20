@@ -15,7 +15,7 @@ metadata:
   creationTimestamp:
   labels:
     appstudio.openshift.io/application: external-rhoai-v2-19
-    appstudio.openshift.io/component: odh-trustyai-service-operator-v2-19
+    appstudio.openshift.io/component: nudge-only-trustyai-service-operator-v2-19
     pipelines.appstudio.openshift.io/type: build
   name: odh-trustyai-service-operator-v2-19-on-push
   namespace: rhoai-tenant
