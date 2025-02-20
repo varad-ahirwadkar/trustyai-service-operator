@@ -14,7 +14,7 @@ metadata:
       && !"config/overlays/rhoai/params.env".pathChanged()
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: rhoai-v2-19
+    appstudio.openshift.io/application: external-rhoai-v2-19
     appstudio.openshift.io/component: ta-lmes-driver-v2-19
     pipelines.appstudio.openshift.io/type: build
   name: ta-lmes-driver-v2-19-on-push
