@@ -184,10 +184,14 @@ spec:
             fi
             
             pipelinerun_name=$(params.pipelinerun-name)
+            echo "pipelinerun_name = $pipelinerun_name"
+            
             target_branch={{target_branch}}
-            echo "pipelinerun-name = $pipelinerun_name"
+            echo "target_branch = $target_branch"
 
             application_name=${target_branch/rhoai-/}
+            echo "application-name = $application_name"
+            
             application_name=rhoai-v${application_name/./-}
             echo "application-name = $application_name"
 
