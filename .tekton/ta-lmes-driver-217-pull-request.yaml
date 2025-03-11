@@ -448,7 +448,7 @@ spec:
         - name: name
           value: coverity-availability-check-oci-ta
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-coverity-availability-check-oci-ta:0.2@sha256:56e92f3530158d3487a09f4f566720448d6f4eda199402fa13c69725aef26fa5
+          value: quay.io/konflux-ci/tekton-catalog/task-coverity-availability-check-oci-ta:0.2@sha256:dae6da690c3670c2a16291abb122a28d74098d5fe2b858c42c9fc451b0426801
         - name: kind
           value: task
         resolver: bundles
