@@ -77,7 +77,7 @@ spec:
       - input: $(tasks.rhoai-init.results.skip-slack-message)
         operator: in
         values:
-        - "false" 
+        - "false"
     params:
     - description: Source Repository URL
       name: git-url
@@ -181,16 +181,16 @@ spec:
             else
               echo "false" > "$(results.skip-slack-message.path)"
             fi
-            
+
             pipelinerun_name=$(params.pipelinerun-name)
             echo "pipelinerun_name = $pipelinerun_name"
-            
+
             target_branch={{target_branch}}
             echo "target_branch = $target_branch"
 
             application_name=${target_branch/rhoai-/}
             echo "application-name = $application_name"
-            
+
             application_name=rhoai-v${application_name/./-}
             echo "application-name = $application_name"
 
@@ -439,7 +439,7 @@ spec:
         - name: name
           value: ecosystem-cert-preflight-checks
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-ecosystem-cert-preflight-checks:0.2@sha256:2ad615f9b8141ed2e0b060ebda366ce43cf55a9dd7c98e2d93970ff328dca8b2
+          value: quay.io/konflux-ci/tekton-catalog/task-ecosystem-cert-preflight-checks:0.2@sha256:50668bab78fcf8aa02d3820a46354d4a125d80eff26fa07f9c23ea58b5e7088e
         - name: kind
           value: task
         resolver: bundles
