@@ -14,8 +14,8 @@ metadata:
       && ( !".tekton/**".pathChanged() || ".tekton/odh-trustyai-service-operator-v2-20-push.yaml".pathChanged() )
   creationTimestamp:
   labels:
-    appstudio.openshift.io/application: external-rhoai-v2-20
-    appstudio.openshift.io/component: nudge-only-trustyai-service-operator-v2-20
+    appstudio.openshift.io/application: rhoai-v2-20
+    appstudio.openshift.io/component: odh-trustyai-service-operator-v2-20
     pipelines.appstudio.openshift.io/type: build
   name: odh-trustyai-service-operator-v2-20-on-push
   namespace: rhoai-tenant
