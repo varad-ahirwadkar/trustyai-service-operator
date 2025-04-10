@@ -2,7 +2,7 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": ["config:recommended"],
     "branchPrefix": "renovate/",
-    "baseBranches": ["main", "rhoai-2.16", "rhoai-2.19", "rhoai-2.20", "rhoai-2.8"],
+    "baseBranches": ["main", "rhoai-2.16", "rhoai-2.19", "rhoai-2.18", "rhoai-2.20", "rhoai-2.8"],
     "ignoreTests": true,
     "automergeType": "pr",
     "automerge": true,
@@ -36,6 +36,11 @@
           "/^quay.io/redhat-appstudio-tekton-catalog//",
           "/^quay.io/konflux-ci/tekton-catalog//"
         ]
+      },
+      {
+        "matchManagers": ["dockerfile", "tekton", "rpm"],
+        "matchBaseBranches": ["rhoai-2.18", "rhoai-2.13"],
+        "enabled": false
       },
       {
         "matchManagers": ["rpm"],
