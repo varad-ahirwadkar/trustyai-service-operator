@@ -2,7 +2,7 @@
 ARG SOURCE_CODE=.
 
 # Build the manager binary
-FROM registry.redhat.io/ubi8/go-toolset:1.23@sha256:292c09f5962fed4ea5c239c6901cd14f21d97efbec55788637212bc5ada01707 as builder
+FROM registry.redhat.io/ubi8/go-toolset:1.23@sha256:3b55bd3a4aec7f72e088af4d2a507b1f9c81b573d180ddb580d051cb544bf1a4 as builder
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -31,7 +31,7 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o ma
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 
-FROM registry.redhat.io/ubi8/ubi-minimal@sha256:33161cf5ec11ea13bfe60cad64f56a3aa4d893852e8ec44b2fd2a6b40cc38539
+FROM registry.redhat.io/ubi8/ubi-minimal@sha256:b2a1bec3dfbc7a14a1d84d98934dfe8fdde6eb822a211286601cf109cbccb075
 
 WORKDIR /
 COPY --from=builder /workspace/manager .
