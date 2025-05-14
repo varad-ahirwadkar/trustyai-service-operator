@@ -2,7 +2,7 @@
 ARG SOURCE_CODE=.
 
 # Build the manager binary
-FROM registry.redhat.io/ubi8/go-toolset:1.23@sha256:f9f4793dd01e62ef3934c49b78ddecc9161351681455bb53385e5501e74cf5f6 as builder
+FROM registry.redhat.io/ubi8/go-toolset:1.23@sha256:a53b8e92fbb045a612f26792c3f095eec0571dfea8ad537a525e49af14f0519b as builder
 
 ARG TARGETOS
 ARG TARGETARCH
