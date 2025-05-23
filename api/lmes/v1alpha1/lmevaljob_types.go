@@ -467,6 +467,12 @@ type OfflineSpec struct {
 	StorageSpec OfflineStorageSpec `json:"storage"`
 }
 
+// ChatTemplate defines the configuration for the applied chat template during the evaluation.
+type ChatTemplate struct {
+	Enabled bool   `json:"enabled"`
+	Name    string `json:"name,omitempty"`
+}
+
 func (p *LMEvalPodSpec) GetAffinity() *corev1.Affinity {
 	if p == nil {
 		return nil
@@ -531,6 +537,12 @@ type LMEvalJobSpec struct {
 	// +optional
 	// +kubebuilder:default:=false
 	AllowCodeExecution *bool `json:"allowCodeExecution,omitempty"`
+	// SystemInstruction will set the system instruction for all prompts passed to the evaluated model
+	// +optional
+	SystemInstruction string `json:"systemInstruction,omitempty"`
+	// ChatTemplate defines whether to apply the default or specified chat template to prompts. This is required for chat-completions models.
+	// +optional
+	ChatTemplate *ChatTemplate `json:"chatTemplate,omitempty"`
 }
 
 // IsOffline returns whether this LMEvalJob is configured to run offline
