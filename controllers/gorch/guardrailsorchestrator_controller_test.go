@@ -174,7 +174,7 @@ func testCreateDeleteGuardrailsOrchestrator(namespaceName string) {
 			Expect(deployment.Labels["app"]).Should(Equal(orchestratorName))
 			Expect(deployment.Spec.Template.Spec.Volumes[0].Name).Should(Equal(orchestratorName + "-config"))
 			Expect(deployment.Spec.Template.Spec.Volumes[0].ConfigMap.Name).Should(Equal(orchestratorName + "-config"))
-			Expect(deployment.Spec.Template.Spec.Containers[0].Image).Should(Equal("quay.io/trustyai/ta-guardrails-orchestrator:latest"))
+			Expect(deployment.Spec.Template.Spec.Containers[0].Image).Should(Equal("na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/odh-fms-guardrails-orchestrator-ubi9:rhoai-2.22"))
 			Expect(deployment.Spec.Template.Spec.Containers[0].VolumeMounts[0].Name).Should(Equal(orchestratorName + "-config"))
 
 			service := &corev1.Service{}
@@ -275,7 +275,7 @@ func testCreateDeleteGuardrailsOrchestratorSidecar(namespaceName string) {
 			Expect(deployment.Name).Should(Equal(orchestratorName))
 			Expect(deployment.Labels["app"]).Should(Equal(orchestratorName))
 			Expect(deployment.Spec.Template.Spec.Volumes[0].Name).Should(Equal(orchestratorName + "-config"))
-			Expect(deployment.Spec.Template.Spec.Containers[0].Image).Should(Equal("quay.io/trustyai/ta-guardrails-orchestrator:latest"))
+			Expect(deployment.Spec.Template.Spec.Containers[0].Image).Should(Equal("na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/odh-fms-guardrails-orchestrator-ubi9:rhoai-2.22"))
 			Expect(deployment.Spec.Template.Spec.Containers[0].VolumeMounts[0].Name).Should(Equal(orchestratorName + "-config"))
 			Expect(deployment.Spec.Template.Spec.Containers[1].Image).Should(Equal("quay.io/trustyai/ta-guardrails-gateway:latest"))
 			Expect(deployment.Spec.Template.Spec.Containers[2].Image).Should(Equal("quay.io/trustyai/ta-guardrails-regex:latest"))
@@ -368,7 +368,7 @@ func testCreateDeleteGuardrailsOrchestratorOtelExporter(namespaceName string) {
 			Expect(deployment.Labels["app"]).Should(Equal(orchestratorName))
 			Expect(deployment.Spec.Template.Spec.Volumes[0].Name).Should(Equal(orchestratorName + "-config"))
 			container = getContainers(orchestratorName, deployment.Spec.Template.Spec.Containers)
-			Expect(container.Image).Should(Equal("quay.io/trustyai/ta-guardrails-orchestrator:latest"))
+			Expect(container.Image).Should(Equal("na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/odh-fms-guardrails-orchestrator-ubi9:rhoai-2.22"))
 			Expect(container.VolumeMounts[0].Name).Should(Equal(orchestratorName + "-config"))
 			envVar = getEnvVar("OTEL_EXPORTER_OTLP_PROTOCOL", container.Env)
 			Expect(envVar).ShouldNot(BeNil())
@@ -597,7 +597,7 @@ func testCreateTwoGuardrailsOrchestratorsInDifferentNamespaces(firstNamespace st
 				Namespace: firstNamespace,
 			},
 			Data: map[string]string{
-				orchestratorImageKey: "quay.io/trustyai/ta-guardrails-orchestrator:latest",
+				orchestratorImageKey: "na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/odh-fms-guardrails-orchestrator-ubi9:rhoai-2.22",
 				gatewayImageKey:      "quay.io/trustyai/ta-guardrails-gateway:latest",
 				detectorImageKey:     "quay.io/trustyai/ta-guardrails-regex:latest",
 			},
@@ -617,7 +617,7 @@ func testCreateTwoGuardrailsOrchestratorsInDifferentNamespaces(firstNamespace st
 				Namespace: secondNamespace,
 			},
 			Data: map[string]string{
-				orchestratorImageKey: "quay.io/trustyai/ta-guardrails-orchestrator:latest",
+				orchestratorImageKey: "na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/odh-fms-guardrails-orchestrator-ubi9:rhoai-2.22",
 				gatewayImageKey:      "quay.io/trustyai/ta-guardrails-gateway:latest",
 				detectorImageKey:     "quay.io/trustyai/ta-guardrails-regex:latest",
 			},
@@ -760,7 +760,7 @@ var _ = Describe("GuardrailsOrchestrator Controller", func() {
 				Namespace: namespaceName,
 			},
 			Data: map[string]string{
-				orchestratorImageKey: "quay.io/trustyai/ta-guardrails-orchestrator:latest",
+				orchestratorImageKey: "na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/odh-fms-guardrails-orchestrator-ubi9:rhoai-2.22",
 				gatewayImageKey:      "quay.io/trustyai/ta-guardrails-gateway:latest",
 				detectorImageKey:     "quay.io/trustyai/ta-guardrails-regex:latest",
 			},

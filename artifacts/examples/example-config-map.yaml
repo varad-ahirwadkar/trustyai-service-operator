@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: trustyai-service-operator-config
 data:
-  trustyaiServiceImage: "quay.io/trustyai/trustyai-service:latest"
+  trustyaiServiceImage: "na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/trustyai-service:latest"

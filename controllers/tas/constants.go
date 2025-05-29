@@ -3,7 +3,7 @@ package tas
 import "time"
 
 const (
-	defaultImage         = string("quay.io/trustyai/trustyai-service:latest")
+	defaultImage         = string("na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/trustyai-service:latest")
 	containerName        = "trustyai-service"
 	componentName        = "trustyai"
 	serviceMonitorName   = "trustyai-metrics"

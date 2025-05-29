@@ -37,8 +37,8 @@ const (
 	AllowOnline                = "lmes-allow-online"
 	AllowCodeExecution         = "lmes-allow-code-execution"
 	DriverPort                 = "lmes-driver-port"
-	DefaultPodImage            = "quay.io/trustyai/ta-lmes-job:latest"
-	DefaultDriverImage         = "quay.io/trustyai/ta-lmes-driver:latest"
+	DefaultPodImage            = "na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/lm-job:latest"
+	DefaultDriverImage         = "na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/ta-lmes-driver:latest"
 	DefaultPodCheckingInterval = time.Second * 10
 	DefaultImagePullPolicy     = corev1.PullAlways
 	DefaultMaxBatchSize        = 24

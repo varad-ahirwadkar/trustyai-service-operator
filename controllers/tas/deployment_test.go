@@ -51,7 +51,7 @@ func setupAndTestDeploymentDefault(instance *trustyaiopendatahubiov1alpha1.Trust
 	Expect(deployment.Labels["app.kubernetes.io/version"]).Should(Equal(constants.Version))
 
 	Expect(len(deployment.Spec.Template.Spec.Containers)).Should(Equal(2))
-	Expect(deployment.Spec.Template.Spec.Containers[0].Image).Should(Equal("quay.io/trustyai/trustyai-service:latest"))
+	Expect(deployment.Spec.Template.Spec.Containers[0].Image).Should(Equal("na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/trustyai-service:latest"))
 	Expect(deployment.Spec.Template.Spec.Containers[1].Image).Should(Equal("registry.redhat.io/openshift4/ose-oauth-proxy:latest"))
 
 	WaitFor(func() error {
@@ -892,7 +892,7 @@ var _ = Describe("TrustyAI operator", func() {
 				Expect(deployment.Labels["app.kubernetes.io/version"]).Should(Equal(constants.Version))
 
 				Expect(len(deployment.Spec.Template.Spec.Containers)).Should(Equal(2))
-				Expect(deployment.Spec.Template.Spec.Containers[0].Image).Should(Equal("quay.io/trustyai/trustyai-service:latest"))
+				Expect(deployment.Spec.Template.Spec.Containers[0].Image).Should(Equal("na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/trustyai-service:latest"))
 				Expect(deployment.Spec.Template.Spec.Containers[1].Image).Should(Equal("registry.redhat.io/openshift4/ose-oauth-proxy:latest"))
 
 				WaitFor(func() error {

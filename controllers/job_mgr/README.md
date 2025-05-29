@@ -80,14 +80,14 @@ When Job Manager is an enabled service LMevalJob requires `kueue.x-k8s.io/queue-
     data:
       kServeServerless: disabled
       lmes-default-batch-size: "8"
-      lmes-driver-image: quay.io/trustyai/ta-lmes-driver:latest
+      lmes-driver-image: na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/ta-lmes-driver:latest
       lmes-image-pull-policy: Always
       lmes-max-batch-size: "24"
       lmes-pod-checking-interval: 10s
-      lmes-pod-image: quay.io/trustyai/ta-lmes-job:latest
+      lmes-pod-image: na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/lm-job:latest
       oauthProxyImage: quay.io/openshift/origin-oauth-proxy:4.14.0
-      trustyaiOperatorImage: quay.io/trustyai/trustyai-service-operator:latest
-      trustyaiServiceImage: quay.io/trustyai/trustyai-service:latest
+      trustyaiOperatorImage: na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/trustyai-service-operator:latest
+      trustyaiServiceImage: na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/trustyai-service:latest
     EOF
     ```
     Start the controller locally:

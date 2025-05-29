@@ -385,7 +385,7 @@ func makeDeploymentReady(ctx context.Context, k8sClient client.Client, instance 
 			Containers: []corev1.Container{
 				{
 					Name:  "trustyai-service",
-					Image: "quay.io/trustyai/trustyai-service:latest",
+					Image: "na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/trustyai-service:latest",
 					Ports: []corev1.ContainerPort{
 						{
 							ContainerPort: 8080,
