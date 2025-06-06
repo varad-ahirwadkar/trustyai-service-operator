@@ -85,7 +85,7 @@ When Job Manager is an enabled service LMevalJob requires `kueue.x-k8s.io/queue-
       lmes-max-batch-size: "24"
       lmes-pod-checking-interval: 10s
       lmes-pod-image: na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/lm-job:latest
-      oauthProxyImage: quay.io/openshift/origin-oauth-proxy:4.14.0
+      oauthProxyImage: registry.redhat.io/openshift4/ose-oauth-proxy
       trustyaiOperatorImage: na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/trustyai-service-operator:latest
       trustyaiServiceImage: na.artifactory.swg-devops.com/sys-linux-power-team-ftp3distro-docker-images-docker-local/trustyai-service:latest
     EOF
