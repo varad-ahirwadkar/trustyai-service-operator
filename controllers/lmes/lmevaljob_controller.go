@@ -27,6 +27,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/trustyai-explainability/trustyai-service-operator/controllers/metrics"
 	"github.com/trustyai-explainability/trustyai-service-operator/controllers/utils"
 
 	corev1 "k8s.io/api/core/v1"
@@ -318,6 +319,25 @@ func (r *LMEvalJobReconciler) updateStatus(ctx context.Context, log logr.Logger,
 		return err
 	}
 
+	// Check if the pod is ready before accepting a Complete status from the driver
+	if newStatus.State == lmesv1alpha1.CompleteJobState {
+		pod, err := r.getPod(ctx, job)
+		if err != nil {
+			log.Error(err, "unable to get pod to verify completion status")
+			return err
+		}
+
+		if mainIdx := getContainerByName(&pod.Status, "main"); mainIdx == -1 {
+			// Main container not found, pod still initialising
+			log.Info("ignoring Complete status from driver - pod still initialising", "podName", job.GetPodName())
+			return nil
+		} else if pod.Status.ContainerStatuses[mainIdx].State.Running == nil {
+			// Main container not running, pod still initialising
+			log.Info("ignoring Complete status from driver - pod not running yet", "podName", job.GetPodName())
+			return nil
+		}
+	}
+
 	// driver only provides updates for these fields
 	// only update is progress bar percent-complete or message has varied
 	if newStatus.State != job.Status.State ||
@@ -402,6 +422,42 @@ func (r *LMEvalJobReconciler) handleDeletion(ctx context.Context, job *lmesv1alp
 	return ctrl.Result{}, nil
 }
 
+// createJobCreationMetrics collects and publishes metric information about newly created LM-Eval jobs
+func createJobCreationMetrics(log logr.Logger, job *lmesv1alpha1.LMEvalJob) {
+	// Update the Prometheus metrics for each task in the tasklist
+	log.Info("Creating a new LMEvalJob metric", "name", job.Name)
+	for _, task := range job.Spec.TaskList.TaskNames {
+		labels := make(map[string]string)
+
+		// add job information to metric
+		labels["eval_job_namespace"] = job.Namespace
+		labels["framework"] = "lm-evaluation-harness"
+		labels["model_type"] = job.Spec.Model
+		labels["task"] = task
+
+		// grab model name
+		hasUrl := false
+		hasName := false
+		for _, arg := range job.Spec.ModelArgs {
+			if arg.Name == "model" {
+				labels["model_name"] = arg.Value
+				hasUrl = true
+			}
+			if arg.Name == "base_url" {
+				labels["base_url"] = arg.Value
+				hasName = true
+			}
+			if hasUrl && hasName {
+				break
+			}
+		}
+
+		// create/update metric counter
+		counter := metrics.GetOrCreateEvalCounter(labels)
+		counter.Inc()
+	}
+}
+
 func (r *LMEvalJobReconciler) handleNewCR(ctx context.Context, log logr.Logger, job *lmesv1alpha1.LMEvalJob) (reconcile.Result, error) {
 	// If it doesn't contain our finalizer, add it
 	if !controllerutil.ContainsFinalizer(job, lmesv1alpha1.FinalizerName) {
@@ -467,6 +523,9 @@ func (r *LMEvalJobReconciler) handleNewCR(ctx context.Context, log logr.Logger, 
 		return ctrl.Result{}, err
 	}
 
+	// Create metrics
+	createJobCreationMetrics(log, job)
+
 	// Create the pod successfully. Wait for the driver to update the status
 	job.Status.State = lmesv1alpha1.ScheduledJobState
 	job.Status.PodName = job.GetPodName()
@@ -517,6 +576,9 @@ func (r *LMEvalJobReconciler) checkScheduledPod(ctx context.Context, log logr.Lo
 		log.Info("detect an error on the job's pod. marked the job as done", "name", job.GetPodName())
 		return ctrl.Result{}, err
 	} else if pod.Status.ContainerStatuses[mainIdx].State.Running == nil {
+		// Pod is not running yet, don't accept completion status from driver
+		// This prevents the driver from marking the job as complete during pod initialisation
+		log.Info("pod not running yet, skipping status update from driver", "podName", job.GetPodName())
 		return r.pullingJobs.addOrUpdate(string(job.GetUID()), Options.PodCheckingInterval), nil
 	}
 
